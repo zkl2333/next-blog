@@ -1,0 +1,21 @@
+{
+	"semi": true,
+	"useTabs": true,
+	"tabWidth": 4,
+	"bracketSpacing": true,
+	"endOfLine": "lf",
+	"jsxBracketSameLine": true,
+	"requirePragma": false,
+	"overrides": [
+		{
+			"files": "*.js",
+			"options": {
+				"arrowParens": "always"
+			}
+		},
+		{
+			"files": ".prettierrc",
+			"options": { "parser": "json" }
+		}
+	]
+}
