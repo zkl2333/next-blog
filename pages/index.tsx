@@ -4,6 +4,7 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import Link from "next/link";
+import "tailwindcss/tailwind.css";
 
 const prisma = new PrismaClient();
 
@@ -12,6 +13,10 @@ export const getStaticProps: GetStaticProps<{ posts: typecho_contents[] }, {}> =
 		try {
 			const typecho_contents = await prisma.typecho_contents.findMany({
 				where: { type: "post", status: "publish" },
+				take: 10,
+				orderBy: {
+					created: "desc",
+				},
 			});
 			return {
 				props: {
@@ -29,7 +34,7 @@ export const getStaticProps: GetStaticProps<{ posts: typecho_contents[] }, {}> =
 
 const Home = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => {
 	return (
-		<div className={styles.container}>
+		<div className={"px-8"}>
 			<Head>
 				<title>Create Next App</title>
 				<meta
@@ -39,41 +44,80 @@ const Home = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
-			<main className={styles.main}>
-				<h1 className={styles.title}>
-					Welcome to <a href="https://nextjs.org">Next.js!</a>
+			<main
+				className={
+					"min-h-screen flex flex-col justify-center items-center flex-1 pt-16 pb-4 my-4 overflow-hidden bg-gray-200 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
+				}>
+				<h1 className={"mb-12 text-7xl"}>
+					Welcome to{" "}
+					<a
+						className="text-blue-700 hover:text-purple-600 focus:text-purple-600 visited:text-purple-600"
+						href="https://nextjs.org">
+						Next.js!
+					</a>
 				</h1>
 
 				<div className={styles.grid}>
 					{posts.map((post) => {
 						return (
-							<Link key={post.cid} href={`/${post.cid}`}>
-								<a className={styles.card}>
-									<h2>{post.title} &rarr;</h2>
-									<p>{post.slug}</p>
-								</a>
-							</Link>
+							<div
+								key={post.cid}
+								className="min-w-full px-8 py-4 mb-4 mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800">
+								<div className="flex items-center justify-between">
+									<span className="text-sm font-light text-gray-600 dark:text-gray-400">
+										Mar 10, 2019
+									</span>
+									<a className="px-3 py-1 text-sm font-bold text-gray-100 transition-colors duration-200 transform bg-gray-600 rounded cursor-pointer hover:bg-gray-500">
+										Design
+									</a>
+								</div>
+
+								<div className="mt-2 ">
+									<a
+										href="#"
+										className="truncate text-2xl font-bold text-gray-700 dark:text-white hover:text-gray-600 dark:hover:text-gray-200 hover:underline">
+										{post.title}
+									</a>
+									<p className="mt-2 text-gray-600 dark:text-gray-300">
+										{post.slug}
+									</p>
+								</div>
+
+								<div className="flex items-center justify-between mt-4">
+									<Link href={`/${post.cid}`}>
+										<a
+											href="#"
+											className="text-blue-600 dark:text-blue-400 hover:underline">
+											Read more
+										</a>
+									</Link>
+
+									<div className="flex items-center">
+										<div className="w-10 h-10 mx-4 rounded-full sm:block">
+											<Image
+												className="hidden object-cover "
+												src="/favicon.ico"
+												alt="avatar"
+												width="40"
+												height="40"
+											/>
+										</div>
+
+										<a className="font-bold text-gray-700 cursor-pointer dark:text-gray-200">
+											zkl2333
+										</a>
+									</div>
+								</div>
+							</div>
+							// /* //{" "}
+							// 		<h2 className="truncate">
+							// 			// {post.title} &rarr; //{" "}
+							// 		</h2>
+							// 		// <p>{post.slug}</p> */
 						);
 					})}
 				</div>
 			</main>
-
-			<footer className={styles.footer}>
-				<a
-					href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer">
-					Powered by{" "}
-					<span className={styles.logo}>
-						<Image
-							src="/vercel.svg"
-							alt="Vercel Logo"
-							width={72}
-							height={16}
-						/>
-					</span>
-				</a>
-			</footer>
 		</div>
 	);
 };
