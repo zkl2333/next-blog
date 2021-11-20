@@ -11,9 +11,8 @@ export const getStaticProps: GetStaticProps<{ posts: typecho_contents[] }, {}> =
 	async () => {
 		try {
 			const typecho_contents = await prisma.typecho_contents.findMany({
-				where: { type: "post" },
+				where: { type: "post", status: "publish" },
 			});
-			// console.log(typecho_contents);
 			return {
 				props: {
 					posts: typecho_contents,
