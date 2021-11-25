@@ -1,4 +1,4 @@
-import { PrismaClient, typecho_contents } from "@prisma/client";
+import { typecho_contents } from "@prisma/client";
 import dayjs from "dayjs";
 import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import Head from "next/head";
@@ -7,37 +7,39 @@ import Link from "next/link";
 import "tailwindcss/tailwind.css";
 import "dayjs/locale/zh-cn";
 import Calendar from "dayjs/plugin/Calendar";
+import { getPostsList } from "./api/posts";
+import { useState } from "react";
 
 dayjs.locale("zh-cn");
 dayjs.extend(Calendar);
 
-const prisma = new PrismaClient();
-
 export const getStaticProps: GetStaticProps<{ posts: typecho_contents[] }, {}> =
 	async () => {
-		try {
-			const typecho_contents = await prisma.typecho_contents.findMany({
-				where: { type: "post", status: "publish" },
-				take: 10,
-				orderBy: {
-					created: "desc",
-				},
-			});
-			return {
-				props: {
-					posts: typecho_contents,
-				},
-				revalidate: 10000,
-			};
-		} catch (error) {
-			await prisma.$disconnect();
-			return {
-				notFound: true,
-			};
-		}
+		const posts = await getPostsList({});
+		return {
+			props: {
+				posts,
+			},
+			revalidate: 10000,
+		};
 	};
 
-const Home = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => {
+const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
+	props
+) => {
+	const [pageIndex, setPageIndex] = useState(1);
+	const [posts, setPosts] = useState(props.posts);
+	const loadMore = async () => {
+		fetch(
+			"/api/posts?" +
+				new URLSearchParams({ page: (pageIndex + 1).toString() })
+		)
+			.then((res) => res.json())
+			.then((json) => {
+				setPageIndex(pageIndex + 1);
+				setPosts([...posts, ...json.list]);
+			});
+	};
 	return (
 		<div className={"md:p-4 min-h-screen"}>
 			<Head>
@@ -118,13 +120,14 @@ const Home = ({ posts }: InferGetStaticPropsType<typeof getStaticProps>) => {
 									</div>
 								</div>
 							</div>
-							// /* //{" "}
-							// 		<h2 className="truncate">
-							// 			// {post.title} &rarr; //{" "}
-							// 		</h2>
-							// 		// <p>{post.slug}</p> */
 						);
 					})}
+
+					<div
+						onClick={loadMore}
+						className="w-max mx-auto text-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-300 focus:ring-opacity-80">
+						加载更多
+					</div>
 				</div>
 			</main>
 		</div>
