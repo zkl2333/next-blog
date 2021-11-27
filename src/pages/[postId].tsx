@@ -10,10 +10,16 @@ marked.setOptions({
 	highlight: function (code, lang) {
 		if (!prism.languages[lang]) {
 			const fallback = "markup";
-			console.error(
-				`Language '${lang}' is not available in Prism.js, will use '${fallback}' instead.`
-			);
-			lang = fallback;
+			if (lang === "") return fallback;
+			try {
+				require("prismjs/components/prism-" + lang);
+				console.log("Prism.js 动态加载语言", lang);
+			} catch (error) {
+				console.warn(
+					`语言 '${lang}' 在 Prism.js 中不可用 , 使用 '${fallback}' 渲染代码高亮.`
+				);
+				lang = fallback;
+			}
 		}
 		return prism.highlight(code, prism.languages[lang], lang);
 	},
