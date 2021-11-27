@@ -4,7 +4,6 @@ import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import "tailwindcss/tailwind.css";
 import "dayjs/locale/zh-cn";
 import Calendar from "dayjs/plugin/Calendar";
 import { getPostsList } from "./api/posts";
