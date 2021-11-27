@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { marked } from "marked";
 import prism from "prismjs";
 import { parseFromString } from "../utils";
+import Head from "next/head";
 
 marked.setOptions({
 	highlight: function (code, lang) {
@@ -26,31 +27,6 @@ marked.setOptions({
 });
 
 const prisma = new PrismaClient();
-
-function Post({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
-	const router = useRouter();
-
-	const [isMounted, setMount] = useState(false);
-	useEffect(() => {
-		setMount(true);
-	}, []);
-
-	if (router.isFallback) {
-		return <div>Loading...</div>;
-	}
-	return (
-		<div className="card markdown-body ">
-			<h1>{parseFromString(post.title || "")}</h1>
-			{isMounted && (
-				<div
-					dangerouslySetInnerHTML={{
-						__html: marked(post.text || ""),
-					}}
-				/>
-			)}
-		</div>
-	);
-}
 
 export const getStaticProps: GetStaticProps<
 	{ post: typecho_contents },
@@ -98,5 +74,38 @@ export const getStaticPaths: GetStaticPaths = async () => {
 		fallback: true,
 	};
 };
+
+function Post({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
+	const router = useRouter();
+
+	const [isMounted, setMount] = useState(false);
+	useEffect(() => {
+		setMount(true);
+	}, []);
+
+	return (
+		<>
+			<Head>
+				<title>博客-{parseFromString(post.title || "")}</title>
+			</Head>
+			<div className="card w-full md:space-y-4 space-y-2 markdown-body">
+				{router.isFallback ? (
+					"loading..."
+				) : (
+					<>
+						<h1>{parseFromString(post.title || "")}</h1>
+						{isMounted && (
+							<div
+								dangerouslySetInnerHTML={{
+									__html: marked(post.text || ""),
+								}}
+							/>
+						)}
+					</>
+				)}
+			</div>
+		</>
+	);
+}
 
 export default Post;

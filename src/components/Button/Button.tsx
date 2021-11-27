@@ -6,7 +6,7 @@ interface IProps extends HTMLAttributes<HTMLDivElement> {
 	type?: "default" | "text" | "link";
 }
 
-const Button: React.FC<IProps> = (props) => {
+export default React.forwardRef<any, IProps>(function Button(props, ref) {
 	const {
 		children,
 		className = "",
@@ -15,12 +15,20 @@ const Button: React.FC<IProps> = (props) => {
 	} = props;
 	const commonClass = styles.button;
 	switch (type) {
+		case "text":
+			return (
+				<span
+					{...props}
+					className={`${commonClass} ${className} hover:underline`}>
+					<a ref={ref}>{children}</a>
+				</span>
+			);
 		case "link":
 			return (
 				<span
 					{...props}
 					className={`${commonClass} ${className}  text-blue-600 dark:text-blue-400 hover:underline`}>
-					{children}
+					<a ref={ref}>{children}</a>
 				</span>
 			);
 		default:
@@ -32,10 +40,8 @@ const Button: React.FC<IProps> = (props) => {
 							? "text-white bg-indigo-600 hover:bg-indigo-500"
 							: "cursor-not-allowed text-gray-400 bg-gray-300"
 					}`}>
-					{children}
+					<a ref={ref}>{children}</a>
 				</div>
 			);
 	}
-};
-
-export default Button;
+});
