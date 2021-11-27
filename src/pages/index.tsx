@@ -7,10 +7,15 @@ import Link from "next/link";
 import "dayjs/locale/zh-cn";
 import Calendar from "dayjs/plugin/Calendar";
 import { getPostsList } from "./api/posts";
-import { useState } from "react";
+import useSWRInfinite from "swr/infinite";
+import { fetcher, MD5, parseFromString } from "../utils";
+import React from "react";
+import Button from "../components/Button/Button";
 
 dayjs.locale("zh-cn");
 dayjs.extend(Calendar);
+
+const PAGE_SIZE = 10;
 
 export const getStaticProps: GetStaticProps<{ posts: typecho_contents[] }, {}> =
 	async () => {
@@ -23,24 +28,33 @@ export const getStaticProps: GetStaticProps<{ posts: typecho_contents[] }, {}> =
 		};
 	};
 
+const getKey = (
+	pageIndex: any,
+	previousPageData: { list: typecho_contents[] } | null
+) => {
+	if (previousPageData?.list && !previousPageData.list.length) return null; // reached the end
+	return `/api/posts?page=${pageIndex}&pageSize=${PAGE_SIZE}`; // SWR key
+};
+
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 	props
 ) => {
-	const [pageIndex, setPageIndex] = useState(1);
-	const [posts, setPosts] = useState(props.posts);
+	const { data, size, setSize } = useSWRInfinite(getKey, fetcher, {
+		fallbackData: [{ list: props.posts }],
+	});
+	if (!data) return <>loading</>;
 	const loadMore = async () => {
-		fetch(
-			"/api/posts?" +
-				new URLSearchParams({ page: (pageIndex + 1).toString() })
-		)
-			.then((res) => res.json())
-			.then((json) => {
-				setPageIndex(pageIndex + 1);
-				setPosts([...posts, ...json.list]);
-			});
+		setSize(size + 1);
 	};
+	const posts = data
+		? ([] as typecho_contents[]).concat(...data.map((page) => page.list))
+		: [];
+	const isEmpty = posts.length === 0;
+	const isReachingEnd =
+		isEmpty || (data && data[data.length - 1]?.list.length < PAGE_SIZE);
+
 	return (
-		<div className={"md:p-4 min-h-screen"}>
+		<main className={"w-full max-w-screen-md md:space-y-4 space-y-2"}>
 			<Head>
 				<title>博客</title>
 				<meta
@@ -49,87 +63,73 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 				/>
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
+			{posts.map((post) => {
+				return (
+					<div key={post.cid} className="min-w-full mx-auto card">
+						<div className="flex items-center justify-between">
+							<span className="text-sm font-light text-gray-600 dark:text-gray-400">
+								{post.modified &&
+									dayjs.unix(post.modified).calendar(null, {
+										sameDay: "[今天] h:mm A", // The same day ( Today at 2:30 AM )
+										nextDay: "[明天]", // The next day ( Tomorrow at 2:30 AM )
+										nextWeek: "dddd", // The next week ( Sunday at 2:30 AM )
+										lastDay: "[昨天]", // The day before ( Yesterday at 2:30 AM )
+										lastWeek: "[上周] dddd", // Last week ( Last Monday at 2:30 AM )
+										sameElse: "YYYY/DD/MM", // Everything else ( 7/10/2011 )
+									})}
+							</span>
+							<a className="px-3 py-1 text-sm font-bold text-gray-100 transition-colors duration-200 transform bg-gray-600 rounded cursor-pointer hover:bg-gray-500">
+								Code
+							</a>
+						</div>
 
-			<main
-				className={
-					"flex flex-col justify-center items-center p-4 overflow-hidden bg-gray-200 border rounded-lg dark:bg-gray-700 dark:border-gray-600"
-				}>
-				<div className={"w-full max-w-screen-md space-y-4"}>
-					{posts.map((post) => {
-						return (
-							<div
-								key={post.cid}
-								className="min-w-full px-8 py-4 mx-auto bg-white rounded-lg shadow-md dark:bg-gray-800">
-								<div className="flex items-center justify-between">
-									<span className="text-sm font-light text-gray-600 dark:text-gray-400">
-										{post.modified &&
-											dayjs
-												.unix(post.modified)
-												.calendar(null, {
-													sameDay: "[今天] h:mm A", // The same day ( Today at 2:30 AM )
-													nextDay: "[明天]", // The next day ( Tomorrow at 2:30 AM )
-													nextWeek: "dddd", // The next week ( Sunday at 2:30 AM )
-													lastDay: "[昨天]", // The day before ( Yesterday at 2:30 AM )
-													lastWeek: "[上周] dddd", // Last week ( Last Monday at 2:30 AM )
-													sameElse: "YYYY/DD/MM", // Everything else ( 7/10/2011 )
-												})}
-									</span>
-									<a className="px-3 py-1 text-sm font-bold text-gray-100 transition-colors duration-200 transform bg-gray-600 rounded cursor-pointer hover:bg-gray-500">
-										Code
-									</a>
+						<div className="mt-2 ">
+							<Link href={`/${post.cid}`} passHref>
+								<span className="block truncate text-2xl font-bold text-gray-700 dark:text-white hover:text-gray-600 dark:hover:text-gray-200 hover:underline">
+									{parseFromString(post.title || "")}
+								</span>
+							</Link>
+							<p className="mt-2 text-gray-600 dark:text-gray-300">
+								{post.slug}
+							</p>
+						</div>
+
+						<div className="flex items-center justify-between mt-4">
+							<Link href={`/${post.cid}`}>
+								<a>
+									<Button type="link">Read more</Button>
+								</a>
+							</Link>
+
+							<div className="flex items-center">
+								<div className="relative w-10 h-10 mx-4 rounded-full sm:block">
+									<Image
+										className="hidden object-cover rounded-full"
+										src={
+											"https://gravatar.loli.top/avatar/" +
+											MD5("i@zkl2333.com")
+										}
+										alt="avatar"
+										layout="fill"
+									/>
 								</div>
 
-								<div className="mt-2 ">
-									<Link href={`/${post.cid}`}>
-										<a
-											href="#"
-											className="block truncate text-2xl font-bold text-gray-700 dark:text-white hover:text-gray-600 dark:hover:text-gray-200 hover:underline"
-											dangerouslySetInnerHTML={{
-												__html: post.title || "",
-											}}
-										/>
-									</Link>
-									<p className="mt-2 text-gray-600 dark:text-gray-300">
-										{post.slug}
-									</p>
-								</div>
-
-								<div className="flex items-center justify-between mt-4">
-									<Link href={`/${post.cid}`}>
-										<a
-											href="#"
-											className="text-blue-600 dark:text-blue-400 hover:underline">
-											Read more
-										</a>
-									</Link>
-
-									<div className="flex items-center">
-										<div className="relative w-10 h-10 mx-4 rounded-full sm:block">
-											<Image
-												className="hidden object-cover "
-												src="/favicon.ico"
-												alt="avatar"
-												layout="fill"
-											/>
-										</div>
-
-										<a className="font-bold text-gray-700 cursor-pointer dark:text-gray-200">
-											zkl2333
-										</a>
-									</div>
-								</div>
+								<a className="font-bold text-gray-700 cursor-pointer dark:text-gray-200">
+									zkl2333
+								</a>
 							</div>
-						);
-					})}
-
-					<div
-						onClick={loadMore}
-						className="w-max mx-auto text-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-200 transform bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-300 focus:ring-opacity-80">
-						加载更多
+						</div>
 					</div>
-				</div>
-			</main>
-		</div>
+				);
+			})}
+
+			<Button
+				disabled={isReachingEnd}
+				onClick={loadMore}
+				className="w-max mx-auto">
+				加载更多
+			</Button>
+		</main>
 	);
 };
 

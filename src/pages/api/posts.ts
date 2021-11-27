@@ -7,12 +7,12 @@ type Data = {
 	list: typecho_contents[];
 };
 
-export const getPostsList = async ({ page = 1, pageSize = 10 }) => {
+export const getPostsList = async ({ page = 0, pageSize = 10 }) => {
 	try {
 		const typecho_contents = await prisma.typecho_contents.findMany({
 			where: { type: "post", status: "publish" },
 			take: pageSize,
-			skip: (page - 1) * pageSize,
+			skip: page * pageSize,
 			orderBy: {
 				created: "desc",
 			},

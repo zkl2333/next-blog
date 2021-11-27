@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import "github-markdown-css";
+/* @import "prismjs/themes/prism.css"; */
+
+body {
+	@apply text-gray-900 bg-gray-100 dark:bg-gray-900 dark:text-white;
+}
+
+.card {
+	@apply bg-white rounded-lg shadow-md dark:bg-gray-800 md:px-8 md:py-4 px-4 py-2;
+}
+
+@import "prismjs/themes/prism.css" (prefers-color-scheme: light);
+@import "prismjs/themes/prism-dark.css" (prefers-color-scheme: dark);

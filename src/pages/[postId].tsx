@@ -1,16 +1,49 @@
 import { PrismaClient, typecho_contents } from ".prisma/client";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { marked } from "marked";
+import prism from "prismjs";
+import { parseFromString } from "../utils";
+
+marked.setOptions({
+	highlight: function (code, lang) {
+		if (!prism.languages[lang]) {
+			const fallback = "markup";
+			console.error(
+				`Language '${lang}' is not available in Prism.js, will use '${fallback}' instead.`
+			);
+			lang = fallback;
+		}
+		return prism.highlight(code, prism.languages[lang], lang);
+	},
+});
 
 const prisma = new PrismaClient();
 
 function Post({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
 	const router = useRouter();
+
+	const [isMounted, setMount] = useState(false);
+	useEffect(() => {
+		setMount(true);
+	}, []);
+
 	if (router.isFallback) {
 		return <div>Loading...</div>;
 	}
-	return <pre>{post.text}</pre>;
+	return (
+		<div className="card markdown-body ">
+			<h1>{parseFromString(post.title || "")}</h1>
+			{isMounted && (
+				<div
+					dangerouslySetInnerHTML={{
+						__html: marked(post.text || ""),
+					}}
+				/>
+			)}
+		</div>
+	);
 }
 
 export const getStaticProps: GetStaticProps<

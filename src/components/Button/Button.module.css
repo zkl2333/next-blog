@@ -1,0 +1,3 @@
+.button {
+	@apply font-medium tracking-wide capitalize transition-colors duration-200 transform ;
+}
