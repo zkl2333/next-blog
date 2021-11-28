@@ -19,7 +19,7 @@ const Layout: React.FC = ({ children }) => {
 					切换夜间模式
 				</div>
 			</div>
-			<div className="flex-1 max-w-2xl overscroll-auto">{children}</div>
+			<div className="flex-1 max-w-2xl overflow-auto">{children}</div>
 		</div>
 	);
 };
