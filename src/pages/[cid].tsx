@@ -10,7 +10,7 @@ import { getPostsList } from "./api/posts";
 
 marked.setOptions({
 	highlight: function (code, lang) {
-		return hljs.highlight(code, { language: lang }).value;
+		return hljs.highlight(code, { language: lang || "markdown" }).value;
 	},
 });
 
@@ -62,6 +62,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
 function Post({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
 	const router = useRouter();
 
+	if (router.isFallback) {
+		return "loading...";
+	}
+
 	const postContent = (post.text || "").replace("<!--markdown-->", "");
 
 	return (
@@ -70,19 +74,13 @@ function Post({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
 				<title>博客-{parseFromString(post.title || "")}</title>
 			</Head>
 			<div className="card w-full md:space-y-4 space-y-2 markdown-body">
-				{router.isFallback ? (
-					"loading..."
-				) : (
-					<>
-						<h1>{parseFromString(post.title || "")}</h1>
-						<div
-							// suppressHydrationWarning={true}
-							dangerouslySetInnerHTML={{
-								__html: marked(postContent),
-							}}
-						/>
-					</>
-				)}
+				<h1>{parseFromString(post.title || "")}</h1>
+				<div
+					// suppressHydrationWarning={true}
+					dangerouslySetInnerHTML={{
+						__html: marked(postContent),
+					}}
+				/>
 			</div>
 		</>
 	);
