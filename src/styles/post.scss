@@ -1,0 +1,7 @@
+@import "github-markdown-css/github-markdown-light";
+@import "highlight.js/styles/github";
+
+.dark {
+	@import "github-markdown-css/github-markdown-dark";
+	@import "highlight.js/styles/github-dark";
+}
