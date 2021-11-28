@@ -16,5 +16,5 @@ html {
 	padding-left: calc(100vw - 100%);
 }
 
-@import "prismjs/themes/prism.css" (prefers-color-scheme: light);
-@import "prismjs/themes/prism-dark.css" (prefers-color-scheme: dark);
+@import "highlight.js/styles/github.css" (prefers-color-scheme: light);
+@import "highlight.js/styles/github-dark.css" (prefers-color-scheme: dark);

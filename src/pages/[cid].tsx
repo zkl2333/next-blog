@@ -1,28 +1,16 @@
 import { PrismaClient, typecho_contents } from ".prisma/client";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { marked } from "marked";
-import prism from "prismjs";
+import hljs from "highlight.js";
 import { parseFromString } from "../utils";
 import Head from "next/head";
+import { getPostsList } from "./api/posts";
 
 marked.setOptions({
 	highlight: function (code, lang) {
-		if (!prism.languages[lang]) {
-			const fallback = "markup";
-			if (lang === "") return fallback;
-			try {
-				require("prismjs/components/prism-" + lang);
-				console.log("Prism.js 动态加载语言", lang);
-			} catch (error) {
-				console.warn(
-					`语言 '${lang}' 在 Prism.js 中不可用 , 使用 '${fallback}' 渲染代码高亮.`
-				);
-				lang = fallback;
-			}
-		}
-		return prism.highlight(code, prism.languages[lang], lang);
+		return hljs.highlight(code, { language: lang }).value;
 	},
 });
 
@@ -30,12 +18,12 @@ const prisma = new PrismaClient();
 
 export const getStaticProps: GetStaticProps<
 	{ post: typecho_contents },
-	{ postId: string }
+	{ cid: string }
 > = async ({ params }) => {
 	try {
 		const typecho_contents = await prisma.typecho_contents.findUnique({
 			where: {
-				cid: Number(params?.postId),
+				cid: Number(params?.cid),
 			},
 		});
 
@@ -60,17 +48,13 @@ export const getStaticProps: GetStaticProps<
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-	const typecho_contents = await prisma.typecho_contents.findMany({
-		where: { type: "post" },
-	});
+	const typecho_contents = await getPostsList({ page: 0, pageSize: 20 });
 	return {
-		paths: typecho_contents.map((post) => {
-			return {
-				params: {
-					postId: post.cid.toString(),
-				},
-			};
-		}),
+		paths: typecho_contents.map((post) => ({
+			params: {
+				cid: post.cid.toString(),
+			},
+		})),
 		fallback: true,
 	};
 };
@@ -78,10 +62,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 function Post({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
 	const router = useRouter();
 
-	const [isMounted, setMount] = useState(false);
-	useEffect(() => {
-		setMount(true);
-	}, []);
+	const postContent = (post.text || "").replace("<!--markdown-->", "");
 
 	return (
 		<>
@@ -94,13 +75,12 @@ function Post({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
 				) : (
 					<>
 						<h1>{parseFromString(post.title || "")}</h1>
-						{isMounted && (
-							<div
-								dangerouslySetInnerHTML={{
-									__html: marked(post.text || ""),
-								}}
-							/>
-						)}
+						<div
+							// suppressHydrationWarning={true}
+							dangerouslySetInnerHTML={{
+								__html: marked(postContent),
+							}}
+						/>
 					</>
 				)}
 			</div>
