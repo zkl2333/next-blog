@@ -28,23 +28,24 @@ model typecho_comments {
 }
 
 model typecho_contents {
-  cid          Int     @id @default(autoincrement()) @db.UnsignedInt
-  title        String? @db.VarChar(200)
-  slug         String? @unique(map: "slug") @db.VarChar(200)
-  created      Int?    @default(0) @db.UnsignedInt
-  modified     Int?    @default(0) @db.UnsignedInt
-  text         String? @db.LongText
-  order        Int?    @default(0) @db.UnsignedInt
-  authorId     Int?    @default(0) @db.UnsignedInt
-  template     String? @db.VarChar(32)
-  type         String? @default("post") @db.VarChar(16)
-  status       String? @default("publish") @db.VarChar(16)
-  password     String? @db.VarChar(32)
-  commentsNum  Int?    @default(0) @db.UnsignedInt
-  allowComment String? @default("0") @db.Char(1)
-  allowPing    String? @default("0") @db.Char(1)
-  allowFeed    String? @default("0") @db.Char(1)
-  parent       Int?    @default(0) @db.UnsignedInt
+  cid          Int            @id @default(autoincrement()) @db.UnsignedInt
+  title        String?        @db.VarChar(200)
+  slug         String?        @unique(map: "slug") @db.VarChar(200)
+  created      Int?           @default(0) @db.UnsignedInt
+  modified     Int?           @default(0) @db.UnsignedInt
+  text         String?        @db.LongText
+  order        Int?           @default(0) @db.UnsignedInt
+  author       typecho_users? @relation(fields: [authorId], references: [uid])
+  authorId     Int?           @default(0) @db.UnsignedInt
+  template     String?        @db.VarChar(32)
+  type         String?        @default("post") @db.VarChar(16)
+  status       String?        @default("publish") @db.VarChar(16)
+  password     String?        @db.VarChar(32)
+  commentsNum  Int?           @default(0) @db.UnsignedInt
+  allowComment String?        @default("0") @db.Char(1)
+  allowPing    String?        @default("0") @db.Char(1)
+  allowFeed    String?        @default("0") @db.Char(1)
+  parent       Int?           @default(0) @db.UnsignedInt
 
   @@index([created], map: "created")
 }
@@ -110,15 +111,16 @@ model typecho_relationships {
 }
 
 model typecho_users {
-  uid        Int     @id @default(autoincrement()) @db.UnsignedInt
-  name       String? @unique(map: "name") @db.VarChar(32)
-  password   String? @db.VarChar(64)
-  mail       String? @unique(map: "mail") @db.VarChar(200)
-  url        String? @db.VarChar(200)
-  screenName String? @db.VarChar(32)
-  created    Int?    @default(0) @db.UnsignedInt
-  activated  Int?    @default(0) @db.UnsignedInt
-  logged     Int?    @default(0) @db.UnsignedInt
-  group      String? @default("visitor") @db.VarChar(16)
-  authCode   String? @db.VarChar(64)
+  uid              Int                @id @default(autoincrement()) @db.UnsignedInt
+  name             String?            @unique(map: "name") @db.VarChar(32)
+  password         String?            @db.VarChar(64)
+  mail             String?            @unique(map: "mail") @db.VarChar(200)
+  url              String?            @db.VarChar(200)
+  screenName       String?            @db.VarChar(32)
+  created          Int?               @default(0) @db.UnsignedInt
+  activated        Int?               @default(0) @db.UnsignedInt
+  logged           Int?               @default(0) @db.UnsignedInt
+  group            String?            @default("visitor") @db.VarChar(16)
+  authCode         String?            @db.VarChar(64)
+  typecho_contents typecho_contents[]
 }

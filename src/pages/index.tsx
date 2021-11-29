@@ -16,7 +16,14 @@ dayjs.extend(Calendar);
 
 const PAGE_SIZE = 10;
 
-export const getStaticProps: GetStaticProps<{ posts: typecho_contents[] }, {}> =
+type my_typecho_contents = (typecho_contents & {
+	author: {
+		name: string | null;
+		mail: string | null;
+	} | null;
+});
+
+export const getStaticProps: GetStaticProps<{ posts: my_typecho_contents[] }, {}> =
 	async () => {
 		const posts = await getPostsList({});
 		return {
@@ -29,7 +36,9 @@ export const getStaticProps: GetStaticProps<{ posts: typecho_contents[] }, {}> =
 
 const getKey = (
 	pageIndex: any,
-	previousPageData: { list: typecho_contents[] } | null
+	previousPageData: {
+		list: my_typecho_contents[];
+	} | null
 ) => {
 	if (previousPageData?.list && !previousPageData.list.length) return null; // reached the end
 	return `/api/posts?page=${pageIndex}&pageSize=${PAGE_SIZE}`; // SWR key
@@ -46,7 +55,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 		setSize(size + 1);
 	};
 	const posts = data
-		? ([] as typecho_contents[]).concat(...data.map((page) => page.list))
+		? ([] as my_typecho_contents[]).concat(...data.map((page) => page.list))
 		: [];
 	const isEmpty = posts.length === 0;
 	const isReachingEnd =
@@ -106,7 +115,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 								</div>
 
 								<a className="font-bold text-gray-700 cursor-pointer dark:text-gray-200">
-									zkl2333
+									{post?.author?.name}
 								</a>
 							</div>
 						</div>

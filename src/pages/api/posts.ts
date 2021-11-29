@@ -4,7 +4,12 @@ import type { NextApiRequest, NextApiResponse } from "next";
 const prisma = new PrismaClient();
 
 type Data = {
-	list: typecho_contents[];
+	list: (typecho_contents & {
+		author: {
+			name: string | null;
+			mail: string | null;
+		} | null;
+	})[];
 };
 
 export const getPostsList = async ({ page = 0, pageSize = 10 }) => {
@@ -13,6 +18,14 @@ export const getPostsList = async ({ page = 0, pageSize = 10 }) => {
 			where: { type: "post", status: "publish" },
 			take: pageSize,
 			skip: page * pageSize,
+			include: {
+				author: {
+					select: {
+						name: true,
+						mail: true,
+					},
+				},
+			},
 			orderBy: {
 				created: "desc",
 			},

@@ -10,7 +10,10 @@ import { getPostsList } from "./api/posts";
 
 marked.setOptions({
 	highlight: function (code, lang) {
-		return hljs.highlight(code, { language: lang || "markdown" }).value;
+		if (!lang) {
+			return hljs.highlightAuto(code).value;
+		}
+		return hljs.highlight(code, { language: lang }).value;
 	},
 });
 
