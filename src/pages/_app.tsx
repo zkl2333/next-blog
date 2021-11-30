@@ -2,12 +2,15 @@ import type { AppProps } from "next/app";
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout/Layout";
 import Head from "next/head";
-import "../styles/post.scss"
+import "../styles/post.scss";
 import "../styles/globals.css";
 
-export const DarkContext = React.createContext({
+export const DarkContext = React.createContext<{
+	userDarkSetting: UserDarkSetting;
+	setUserDarkSetting: (userDarkSetting: UserDarkSetting) => void;
+}>({
 	userDarkSetting: "auto",
-	setUserDarkSetting: (userDarkSetting: "auto" | "dark" | "light") => {},
+	setUserDarkSetting: () => {},
 });
 
 function MyApp({ Component, pageProps }: AppProps) {

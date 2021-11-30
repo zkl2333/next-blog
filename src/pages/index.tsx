@@ -1,13 +1,12 @@
 import { typecho_contents } from "@prisma/client";
 import dayjs from "dayjs";
 import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import "dayjs/locale/zh-cn";
 import Calendar from "dayjs/plugin/calendar";
 import { getPostsList } from "./api/posts";
 import useSWRInfinite from "swr/infinite";
-import { fetcher, MD5, parseFromString } from "../utils";
+import { fetcher, parseFromString } from "../utils";
 import React from "react";
 import Button from "../components/Button/Button";
 
@@ -16,23 +15,25 @@ dayjs.extend(Calendar);
 
 const PAGE_SIZE = 10;
 
-type my_typecho_contents = (typecho_contents & {
+type my_typecho_contents = typecho_contents & {
 	author: {
 		name: string | null;
 		mail: string | null;
 	} | null;
-});
+};
 
-export const getStaticProps: GetStaticProps<{ posts: my_typecho_contents[] }, {}> =
-	async () => {
-		const posts = await getPostsList({});
-		return {
-			props: {
-				posts,
-			},
-			revalidate: 10000,
-		};
+export const getStaticProps: GetStaticProps<
+	{ posts: my_typecho_contents[] },
+	{}
+> = async () => {
+	const posts = await getPostsList({});
+	return {
+		props: {
+			posts,
+		},
+		revalidate: 10000,
 	};
+};
 
 const getKey = (
 	pageIndex: any,
@@ -102,18 +103,6 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 							</Link>
 
 							<div className="flex items-center">
-								<div className="relative w-10 h-10 mx-4 rounded-full sm:block">
-									<Image
-										className="hidden object-cover rounded-full"
-										src={
-											"https://gravatar.loli.top/avatar/" +
-											MD5("i@zkl2333.com")
-										}
-										alt="avatar"
-										layout="fill"
-									/>
-								</div>
-
 								<a className="font-bold text-gray-700 cursor-pointer dark:text-gray-200">
 									{post?.author?.name}
 								</a>
