@@ -4,7 +4,7 @@ import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import "dayjs/locale/zh-cn";
-import Calendar from "dayjs/plugin/Calendar.js";
+import Calendar from "dayjs/plugin/calendar";
 import { getPostsList } from "./api/posts";
 import useSWRInfinite from "swr/infinite";
 import { fetcher, MD5, parseFromString } from "../utils";
