@@ -2,12 +2,12 @@
 	"name": "next",
 	"private": true,
 	"scripts": {
-		"dev": "next dev",
+		"dev": "dotenv -c -- next dev",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
 		"export": "next export",
-		"studio:local": "dotenv -e .env.local -- npx prisma studio"
+		"studio": "dotenv -c -- npx prisma studio"
 	},
 	"dependencies": {
 		"@types/marked": "^4.0.1",
