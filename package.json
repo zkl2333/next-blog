@@ -7,7 +7,7 @@
 		"start": "next start",
 		"lint": "next lint",
 		"export": "next export",
-		"studio": "dotenv -c -- npx prisma studio"
+		"prisma": "dotenv -c -- npx prisma"
 	},
 	"dependencies": {
 		"@types/marked": "^4.0.1",

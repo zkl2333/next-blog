@@ -1,20 +1,23 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
 model typecho_comments {
   coid     Int     @id @default(autoincrement()) @db.UnsignedInt
   cid      Int?    @default(0) @db.UnsignedInt
   created  Int?    @default(0) @db.UnsignedInt
-  author   String? @db.VarChar(200)
+  author   String? @db.VarChar(150)
   authorId Int?    @default(0) @db.UnsignedInt
   ownerId  Int?    @default(0) @db.UnsignedInt
-  mail     String? @db.VarChar(200)
+  mail     String? @db.VarChar(150)
   url      String? @db.VarChar(255)
   ip       String? @db.VarChar(64)
   agent    String? @db.VarChar(511)
@@ -29,8 +32,8 @@ model typecho_comments {
 
 model typecho_contents {
   cid          Int            @id @default(autoincrement()) @db.UnsignedInt
-  title        String?        @db.VarChar(200)
-  slug         String?        @unique(map: "slug") @db.VarChar(200)
+  title        String?        @db.VarChar(150)
+  slug         String?        @unique(map: "slug") @db.VarChar(150)
   created      Int?           @default(0) @db.UnsignedInt
   modified     Int?           @default(0) @db.UnsignedInt
   text         String?        @db.LongText
@@ -52,7 +55,7 @@ model typecho_contents {
 
 model typecho_fields {
   cid         Int     @db.UnsignedInt
-  name        String  @db.VarChar(200)
+  name        String  @db.VarChar(150)
   type        String? @default("str") @db.VarChar(8)
   str_value   String? @db.Text
   int_value   Int?    @default(0)
@@ -84,10 +87,10 @@ model typecho_mail {
 
 model typecho_metas {
   mid         Int     @id @default(autoincrement()) @db.UnsignedInt
-  name        String? @db.VarChar(200)
-  slug        String? @db.VarChar(200)
+  name        String? @db.VarChar(150)
+  slug        String? @db.VarChar(150)
   type        String  @db.VarChar(32)
-  description String? @db.VarChar(200)
+  description String? @db.VarChar(150)
   count       Int?    @default(0) @db.UnsignedInt
   order       Int?    @default(0) @db.UnsignedInt
   parent      Int?    @default(0) @db.UnsignedInt
@@ -114,8 +117,8 @@ model typecho_users {
   uid              Int                @id @default(autoincrement()) @db.UnsignedInt
   name             String?            @unique(map: "name") @db.VarChar(32)
   password         String?            @db.VarChar(64)
-  mail             String?            @unique(map: "mail") @db.VarChar(200)
-  url              String?            @db.VarChar(200)
+  mail             String?            @unique(map: "mail") @db.VarChar(150)
+  url              String?            @db.VarChar(150)
   screenName       String?            @db.VarChar(32)
   created          Int?               @default(0) @db.UnsignedInt
   activated        Int?               @default(0) @db.UnsignedInt
