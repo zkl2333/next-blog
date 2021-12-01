@@ -78,7 +78,7 @@ const Layout: React.FC = ({ children }) => {
 					</div>
 				</div>
 			</div>
-			<div className="flex-1 max-w-2xl overflow-auto">{children}</div>
+			<div className="flex-1 max-w-2xl w-full">{children}</div>
 		</div>
 	);
 };
