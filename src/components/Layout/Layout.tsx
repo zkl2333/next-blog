@@ -1,8 +1,8 @@
 import Link from "next/link";
 import React, { useContext } from "react";
-import { DarkContext } from "../../pages/_app";
 import Image from "next/image";
 import { MD5 } from "../../utils";
+import { DarkContext } from "../../context";
 
 const darkModeText: { [k in UserDarkSetting]: string } = {
 	dark: "夜间模式",

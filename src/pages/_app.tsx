@@ -4,20 +4,19 @@ import Layout from "../components/Layout/Layout";
 import Head from "next/head";
 import "../styles/post.scss";
 import "../styles/globals.css";
-
-export const DarkContext = React.createContext<{
-	userDarkSetting: UserDarkSetting;
-	setUserDarkSetting: (userDarkSetting: UserDarkSetting) => void;
-}>({
-	userDarkSetting: "auto",
-	setUserDarkSetting: () => {},
-});
+import useSWR from "swr";
+import { fetcher } from "../utils";
+import { DarkContext, OptionsContext } from "../context";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const [sysDark, setSysDark] = useState(false);
 	const [userDarkSetting, setUserDarkSetting] = useState<
 		"dark" | "light" | "auto"
 	>("auto");
+
+	const { data: options } = useSWR("/api/options", fetcher, {
+		dedupingInterval: 20000,
+	});
 
 	useEffect(() => {
 		const darkModeMatchMedia =
@@ -47,17 +46,27 @@ function MyApp({ Component, pageProps }: AppProps) {
 		document.documentElement.classList.toggle("dark", isDarkmod);
 	}, [isDarkmod, userDarkSetting]);
 
+	useEffect(() => {
+		console.log(options);
+	}, [options]);
+
 	return (
-		<DarkContext.Provider value={{ userDarkSetting, setUserDarkSetting }}>
-			<Layout>
-				<Head>
-					<title>博客</title>
-					<meta name="viewport" content="width=device-width, viewport-fit=cover" />
-					<link rel="icon" href="/favicon.ico" />
-				</Head>
-				<Component {...pageProps} />
-			</Layout>
-		</DarkContext.Provider>
+		<OptionsContext.Provider value={options}>
+			<DarkContext.Provider
+				value={{ userDarkSetting, setUserDarkSetting }}>
+				<Layout>
+					<Head>
+						<title>博客</title>
+						<meta
+							name="viewport"
+							content="width=device-width, viewport-fit=cover"
+						/>
+						<link rel="icon" href="/favicon.ico" />
+					</Head>
+					<Component {...pageProps} />
+				</Layout>
+			</DarkContext.Provider>
+		</OptionsContext.Provider>
 	);
 }
 

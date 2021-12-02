@@ -1,4 +1,4 @@
-import { typecho_contents } from "@prisma/client";
+import { Content } from "@prisma/client";
 import dayjs from "dayjs";
 import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import Link from "next/link";
@@ -15,7 +15,7 @@ dayjs.extend(Calendar);
 
 const PAGE_SIZE = 10;
 
-type my_typecho_contents = typecho_contents & {
+type contentWithAuthor = Content & {
 	author: {
 		name: string | null;
 		mail: string | null;
@@ -23,7 +23,7 @@ type my_typecho_contents = typecho_contents & {
 };
 
 export const getStaticProps: GetStaticProps<
-	{ posts: my_typecho_contents[] },
+	{ posts: contentWithAuthor[] },
 	{}
 > = async () => {
 	const posts = await getPostsList({});
@@ -38,7 +38,7 @@ export const getStaticProps: GetStaticProps<
 const getKey = (
 	pageIndex: any,
 	previousPageData: {
-		list: my_typecho_contents[];
+		list: contentWithAuthor[];
 	} | null
 ) => {
 	if (previousPageData?.list && !previousPageData.list.length) return null; // reached the end
@@ -61,7 +61,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 		setSize(size + 1);
 	};
 	const posts = data
-		? ([] as my_typecho_contents[]).concat(...data.map((page) => page.list))
+		? ([] as contentWithAuthor[]).concat(...data.map((page) => page.list))
 		: [];
 	const isEmpty = posts.length === 0;
 	const isReachingEnd =

@@ -1,10 +1,10 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { PrismaClient, typecho_contents } from "@prisma/client";
+import { Content } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
-const prisma = new PrismaClient();
+import prismaClient from "../../prismaClient";
 
 type Data = {
-	list: (typecho_contents & {
+	list: (Content & {
 		author: {
 			name: string | null;
 			mail: string | null;
@@ -14,11 +14,16 @@ type Data = {
 
 export const getPostsList = async ({ page = 0, pageSize = 10 }) => {
 	try {
-		const typecho_contents = await prisma.typecho_contents.findMany({
+		const contents = await prismaClient.content.findMany({
 			where: { type: "post", status: "publish" },
 			take: pageSize,
 			skip: page * pageSize,
 			include: {
+				relationships: {
+					select: {
+						metas: true,
+					},
+				},
 				author: {
 					select: {
 						name: true,
@@ -30,10 +35,9 @@ export const getPostsList = async ({ page = 0, pageSize = 10 }) => {
 				created: "desc",
 			},
 		});
-		return typecho_contents;
+		return contents;
 	} catch (error) {
 		console.error(error);
-		await prisma.$disconnect();
 		return [];
 	}
 };
@@ -42,7 +46,6 @@ export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse<Data>
 ) {
-	console.log(req.query);
 	const posts = await getPostsList({
 		page: Number(req.query.page || 1),
 		pageSize: Number(req.query.pageSize || 10),

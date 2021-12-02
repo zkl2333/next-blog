@@ -1,4 +1,4 @@
-import { PrismaClient, typecho_contents } from ".prisma/client";
+import { Content } from "@prisma/client";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import React from "react";
@@ -7,6 +7,7 @@ import hljs from "highlight.js";
 import { parseFromString } from "../utils";
 import Head from "next/head";
 import { getPostsList } from "./api/posts";
+import prismaClient from "../prismaClient";
 
 marked.setOptions({
 	highlight: function (code, lang) {
@@ -17,23 +18,21 @@ marked.setOptions({
 	},
 });
 
-const prisma = new PrismaClient();
-
 export const getStaticProps: GetStaticProps<
-	{ post: typecho_contents },
+	{ post: Content },
 	{ cid: string }
 > = async ({ params }) => {
 	try {
-		const typecho_contents = await prisma.typecho_contents.findUnique({
+		const contents = await prismaClient.content.findUnique({
 			where: {
 				cid: Number(params?.cid),
 			},
 		});
 
-		if (typecho_contents) {
+		if (contents) {
 			return {
 				props: {
-					post: typecho_contents,
+					post: contents,
 				},
 				revalidate: 10000,
 			};
@@ -43,7 +42,7 @@ export const getStaticProps: GetStaticProps<
 			notFound: true,
 		};
 	} catch (error) {
-		await prisma.$disconnect();
+		await prismaClient.$disconnect();
 		return {
 			notFound: true,
 		};
@@ -51,9 +50,9 @@ export const getStaticProps: GetStaticProps<
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-	const typecho_contents = await getPostsList({ page: 0, pageSize: 20 });
+	const contents = await getPostsList({ page: 0, pageSize: 20 });
 	return {
-		paths: typecho_contents.map((post) => ({
+		paths: contents.map((post) => ({
 			params: {
 				cid: post.cid.toString(),
 			},

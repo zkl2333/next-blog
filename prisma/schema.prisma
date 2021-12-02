@@ -10,7 +10,7 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
-model typecho_comments {
+model Comment {
   coid     Int     @id @default(autoincrement()) @db.UnsignedInt
   cid      Int?    @default(0) @db.UnsignedInt
   created  Int?    @default(0) @db.UnsignedInt
@@ -28,32 +28,35 @@ model typecho_comments {
 
   @@index([cid], map: "cid")
   @@index([created], map: "created")
+  @@map("typecho_comments")
 }
 
-model typecho_contents {
-  cid          Int            @id @default(autoincrement()) @db.UnsignedInt
-  title        String?        @db.VarChar(150)
-  slug         String?        @unique(map: "slug") @db.VarChar(150)
-  created      Int?           @default(0) @db.UnsignedInt
-  modified     Int?           @default(0) @db.UnsignedInt
-  text         String?        @db.LongText
-  order        Int?           @default(0) @db.UnsignedInt
-  author       typecho_users? @relation(fields: [authorId], references: [uid])
-  authorId     Int?           @default(0) @db.UnsignedInt
-  template     String?        @db.VarChar(32)
-  type         String?        @default("post") @db.VarChar(16)
-  status       String?        @default("publish") @db.VarChar(16)
-  password     String?        @db.VarChar(32)
-  commentsNum  Int?           @default(0) @db.UnsignedInt
-  allowComment String?        @default("0") @db.Char(1)
-  allowPing    String?        @default("0") @db.Char(1)
-  allowFeed    String?        @default("0") @db.Char(1)
-  parent       Int?           @default(0) @db.UnsignedInt
+model Content {
+  cid           Int             @id @default(autoincrement()) @db.UnsignedInt
+  title         String?         @db.VarChar(150)
+  slug          String?         @unique(map: "slug") @db.VarChar(150)
+  created       Int?            @default(0) @db.UnsignedInt
+  modified      Int?            @default(0) @db.UnsignedInt
+  text          String?         @db.LongText
+  order         Int?            @default(0) @db.UnsignedInt
+  author        User?           @relation(fields: [authorId], references: [uid])
+  authorId      Int?            @default(0) @db.UnsignedInt
+  template      String?         @db.VarChar(32)
+  type          String?         @default("post") @db.VarChar(16)
+  status        String?         @default("publish") @db.VarChar(16)
+  password      String?         @db.VarChar(32)
+  commentsNum   Int?            @default(0) @db.UnsignedInt
+  allowComment  String?         @default("0") @db.Char(1)
+  allowPing     String?         @default("0") @db.Char(1)
+  allowFeed     String?         @default("0") @db.Char(1)
+  parent        Int?            @default(0) @db.UnsignedInt
+  relationships Relationships[]
 
   @@index([created], map: "created")
+  @@map("typecho_contents")
 }
 
-model typecho_fields {
+model Field {
   cid         Int     @db.UnsignedInt
   name        String  @db.VarChar(150)
   type        String? @default("str") @db.VarChar(8)
@@ -61,12 +64,14 @@ model typecho_fields {
   int_value   Int?    @default(0)
   float_value Float?  @default(0) @db.Float
 
+
   @@id([cid, name])
   @@index([float_value], map: "float_value")
   @@index([int_value], map: "int_value")
+  @@map("typecho_fields")
 }
 
-model typecho_links {
+model Link {
   lid         Int     @id @default(autoincrement()) @db.UnsignedInt
   name        String? @db.VarChar(200)
   url         String? @db.VarChar(200)
@@ -76,16 +81,20 @@ model typecho_links {
   description String? @db.VarChar(200)
   user        String? @db.VarChar(200)
   order       Int?    @default(0) @db.UnsignedInt
+
+  @@map("typecho_links")
 }
 
-model typecho_mail {
+model Mail {
   id      Int      @id @default(autoincrement()) @db.UnsignedInt
   content String   @db.Text
   sent    Boolean? @default(false)
   log     String?  @db.Text
+
+  @@map("typecho_mail")
 }
 
-model typecho_metas {
+model Meta {
   mid         Int     @id @default(autoincrement()) @db.UnsignedInt
   name        String? @db.VarChar(150)
   slug        String? @db.VarChar(150)
@@ -95,35 +104,44 @@ model typecho_metas {
   order       Int?    @default(0) @db.UnsignedInt
   parent      Int?    @default(0) @db.UnsignedInt
 
+  relationships Relationships[]
+
   @@index([slug], map: "slug")
+  @@map("typecho_metas")
 }
 
-model typecho_options {
+model Option {
   name  String  @db.VarChar(32)
   user  Int     @default(0) @db.UnsignedInt
   value String? @db.Text
 
   @@id([name, user])
+  @@map("typecho_options")
 }
 
-model typecho_relationships {
-  cid Int @db.UnsignedInt
-  mid Int @db.UnsignedInt
+model Relationships {
+  cid      Int     @db.UnsignedInt
+  contents Content @relation(fields: [cid], references: [cid])
+  mid      Int     @db.UnsignedInt
+  metas    Meta    @relation(fields: [mid], references: [mid])
 
   @@id([cid, mid])
+  @@map("typecho_relationships")
 }
 
-model typecho_users {
-  uid              Int                @id @default(autoincrement()) @db.UnsignedInt
-  name             String?            @unique(map: "name") @db.VarChar(32)
-  password         String?            @db.VarChar(64)
-  mail             String?            @unique(map: "mail") @db.VarChar(150)
-  url              String?            @db.VarChar(150)
-  screenName       String?            @db.VarChar(32)
-  created          Int?               @default(0) @db.UnsignedInt
-  activated        Int?               @default(0) @db.UnsignedInt
-  logged           Int?               @default(0) @db.UnsignedInt
-  group            String?            @default("visitor") @db.VarChar(16)
-  authCode         String?            @db.VarChar(64)
-  typecho_contents typecho_contents[]
+model User {
+  uid              Int       @id @default(autoincrement()) @db.UnsignedInt
+  name             String?   @unique(map: "name") @db.VarChar(32)
+  password         String?   @db.VarChar(64)
+  mail             String?   @unique(map: "mail") @db.VarChar(150)
+  url              String?   @db.VarChar(150)
+  screenName       String?   @db.VarChar(32)
+  created          Int?      @default(0) @db.UnsignedInt
+  activated        Int?      @default(0) @db.UnsignedInt
+  logged           Int?      @default(0) @db.UnsignedInt
+  group            String?   @default("visitor") @db.VarChar(16)
+  authCode         String?   @db.VarChar(64)
+  typecho_contents Content[]
+
+  @@map("typecho_users")
 }
