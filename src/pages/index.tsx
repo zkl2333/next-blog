@@ -48,9 +48,14 @@ const getKey = (
 const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 	props
 ) => {
-	const { data, size, setSize } = useSWRInfinite(getKey, fetcher, {
-		fallbackData: [{ list: props.posts }],
-	});
+	const { data, size, setSize, isValidating } = useSWRInfinite(
+		getKey,
+		fetcher,
+		{
+			initialSize: 2,
+			fallbackData: [{ list: props.posts }],
+		}
+	);
 	if (!data) return <>loading</>;
 	const loadMore = async () => {
 		setSize(size + 1);
@@ -113,8 +118,8 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 			})}
 
 			<Button
-				disabled={isReachingEnd}
-				onClick={loadMore}
+				disabled={isReachingEnd || isValidating}
+				onClick={!(isReachingEnd || isValidating) ? loadMore : () => {}}
 				className="w-max mx-auto">
 				加载更多
 			</Button>
