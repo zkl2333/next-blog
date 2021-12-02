@@ -8,6 +8,7 @@ import { parseFromString } from "../utils";
 import Head from "next/head";
 import { getPostsList } from "./api/posts";
 import prismaClient from "../prismaClient";
+import { getOptions } from "./api/options";
 
 marked.setOptions({
 	highlight: function (code, lang) {
@@ -19,7 +20,7 @@ marked.setOptions({
 });
 
 export const getStaticProps: GetStaticProps<
-	{ post: Content },
+	{ post: Content; optionsMap: { [key: string]: string | null } },
 	{ cid: string }
 > = async ({ params }) => {
 	try {
@@ -28,11 +29,13 @@ export const getStaticProps: GetStaticProps<
 				cid: Number(params?.cid),
 			},
 		});
+		const optionsMap = await getOptions();
 
 		if (contents) {
 			return {
 				props: {
 					post: contents,
+					optionsMap,
 				},
 				revalidate: 10000,
 			};
@@ -61,7 +64,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	};
 };
 
-function Post({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
+function Post({
+	post,
+	optionsMap,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
 	const router = useRouter();
 
 	if (router.isFallback) {
@@ -73,7 +79,9 @@ function Post({ post }: InferGetStaticPropsType<typeof getStaticProps>) {
 	return (
 		<>
 			<Head>
-				<title>博客-{parseFromString(post.title || "")}</title>
+				<title>
+					{optionsMap.title}-{parseFromString(post.title || "")}
+				</title>
 			</Head>
 			<div className="card w-full md:space-y-4 space-y-2 markdown-body">
 				<h1>{parseFromString(post.title || "")}</h1>

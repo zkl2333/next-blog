@@ -9,6 +9,8 @@ import useSWRInfinite from "swr/infinite";
 import { fetcher, parseFromString } from "../utils";
 import React from "react";
 import Button from "../components/Button/Button";
+import { getOptions } from "./api/options";
+import Head from "next/head";
 
 dayjs.locale("zh-cn");
 dayjs.extend(Calendar);
@@ -23,13 +25,15 @@ type contentWithAuthor = Content & {
 };
 
 export const getStaticProps: GetStaticProps<
-	{ posts: contentWithAuthor[] },
+	{ posts: contentWithAuthor[]; optionsMap: { [key: string]: string | null} },
 	{}
 > = async () => {
 	const posts = await getPostsList({});
+	const optionsMap = await getOptions();
 	return {
 		props: {
 			posts,
+			optionsMap,
 		},
 		revalidate: 10000,
 	};
@@ -69,6 +73,9 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 
 	return (
 		<main className={"w-full md:space-y-4 space-y-2"}>
+			<Head>
+				<title>{props.optionsMap.title}</title>
+			</Head>
 			{posts.map((post) => {
 				return (
 					<div key={post.cid} className="min-w-full mx-auto card">

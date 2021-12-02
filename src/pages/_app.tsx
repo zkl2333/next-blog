@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 		"dark" | "light" | "auto"
 	>("auto");
 
-	const { data: options } = useSWR("/api/options", fetcher, {
+	const { data: optionsMap } = useSWR("/api/options", fetcher, {
 		dedupingInterval: 20000,
 	});
 
@@ -47,11 +47,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 	}, [isDarkmod, userDarkSetting]);
 
 	useEffect(() => {
-		console.log(options);
-	}, [options]);
+		console.log(optionsMap);
+	}, [optionsMap]);
 
 	return (
-		<OptionsContext.Provider value={options}>
+		<OptionsContext.Provider value={optionsMap}>
 			<DarkContext.Provider
 				value={{ userDarkSetting, setUserDarkSetting }}>
 				<Layout>

@@ -1,20 +1,26 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Option } from "@prisma/client";
 import prismaClient from "../../prismaClient";
 
 export const getOptions = async () => {
 	try {
-		const options = await prismaClient.option.findMany();
-		return options;
+		const options = await prismaClient.option.findMany({
+			where: {
+				user: 0,
+				name: { in: ["title", "keywords", "description"] },
+			},
+		});
+		return Object.fromEntries(
+			options.map((option) => [option.name, option.value])
+		);
 	} catch (error) {
 		console.error(error);
-		return [];
+		return {};
 	}
 };
 
 const getOptionsApi = async (
 	req: NextApiRequest,
-	res: NextApiResponse<Option[]>
+	res: NextApiResponse<{ [key: string]: string | null }>
 ) => {
 	res.status(200).json(await getOptions());
 };
