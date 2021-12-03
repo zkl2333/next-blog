@@ -7,7 +7,7 @@
 		"start": "next start",
 		"lint": "next lint",
 		"export": "next export",
-		"prisma": "dotenv -c -- npx prisma"
+		"prisma": "dotenv -c -- pnpx prisma"
 	},
 	"dependencies": {
 		"@types/marked": "^4.0.1",
@@ -23,7 +23,7 @@
 		"swr": "^1.0.1"
 	},
 	"devDependencies": {
-		"@prisma/client": "^3.5.0",
+		"@prisma/client": "^3.6.0",
 		"@types/node": "16.11.7",
 		"@types/react": "17.0.34",
 		"autoprefixer": "^10.4.0",
@@ -31,7 +31,7 @@
 		"eslint": "7.32.0",
 		"eslint-config-next": "12.0.3",
 		"postcss": "^8.3.11",
-		"prisma": "^3.5.0",
+		"prisma": "^3.6.0",
 		"tailwindcss": "^2.2.19",
 		"typescript": "4.4.4"
 	}

@@ -25,7 +25,10 @@ type contentWithAuthor = Content & {
 };
 
 export const getStaticProps: GetStaticProps<
-	{ posts: contentWithAuthor[]; optionsMap: { [key: string]: string | null} },
+	{
+		posts: contentWithAuthor[];
+		optionsMap: { [key: string]: string | null };
+	},
 	{}
 > = async () => {
 	const posts = await getPostsList({});
@@ -128,7 +131,11 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 				disabled={isReachingEnd || isValidating}
 				onClick={!(isReachingEnd || isValidating) ? loadMore : () => {}}
 				className="w-max mx-auto">
-				加载更多
+				{isValidating
+					? "加载中..."
+					: isReachingEnd
+					? "没有更多"
+					: "加载更多"}
 			</Button>
 		</main>
 	);
