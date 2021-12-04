@@ -2,6 +2,7 @@
 	"name": "next",
 	"private": true,
 	"scripts": {
+		"postinstall": "node postinstall.js",
 		"dev": "dotenv -c -- next dev",
 		"build": "next build",
 		"start": "next start",
