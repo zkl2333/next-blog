@@ -1,4 +1,3 @@
-import { Content } from "@prisma/client";
 import dayjs from "dayjs";
 import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
 import Link from "next/link";
@@ -17,7 +16,7 @@ dayjs.extend(Calendar);
 
 const PAGE_SIZE = 10;
 
-type contentWithAuthor = Content & {
+type contentWithAuthor = any & {
 	author: {
 		name: string | null;
 		mail: string | null;
@@ -80,8 +79,9 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 				<title>{props.optionsMap.title}</title>
 			</Head>
 			{posts.map((post) => {
+				const href = post.permalink;
 				return (
-					<div key={post.cid} className="min-w-full mx-auto card">
+					<div key={href} className="min-w-full mx-auto card">
 						<div className="flex items-center justify-between">
 							<span className="text-sm font-light text-gray-600 dark:text-gray-400">
 								{post.modified &&
@@ -100,7 +100,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 						</div>
 
 						<div className="mt-2 ">
-							<Link href={`/${post.cid}`} passHref>
+							<Link href={href} passHref>
 								<Button
 									type="text"
 									className="block truncate text-2xl font-bold text-gray-700 dark:text-white hover:text-gray-600 dark:hover:text-gray-200 hover:underline">
@@ -113,7 +113,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 						</div>
 
 						<div className="flex items-center justify-between mt-4">
-							<Link href={`/${post.cid}`} passHref>
+							<Link href={href} passHref>
 								<Button type="link">Read more</Button>
 							</Link>
 

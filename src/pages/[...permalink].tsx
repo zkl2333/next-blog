@@ -1,4 +1,3 @@
-import { Content } from "@prisma/client";
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next";
 import { useRouter } from "next/router";
 import React from "react";
@@ -6,9 +5,7 @@ import { marked } from "marked";
 import hljs from "highlight.js";
 import { parseFromString } from "../utils";
 import Head from "next/head";
-import { getPostsList } from "./api/posts";
-import prismaClient from "../prismaClient";
-import { getOptions } from "./api/options";
+import { getPostData, getPostsList } from "./api/posts";
 
 marked.setOptions({
 	highlight: function (code, lang) {
@@ -19,48 +16,36 @@ marked.setOptions({
 	},
 });
 
-export const getStaticProps: GetStaticProps<
-	{ post: Content; optionsMap: { [key: string]: string | null } },
-	{ cid: string }
-> = async ({ params }) => {
-	try {
-		const contents = await prismaClient.content.findUnique({
-			where: {
-				cid: Number(params?.cid),
-			},
-		});
-		const optionsMap = await getOptions();
-
-		if (contents) {
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+	if (params && Array.isArray(params.permalink)) {
+		const permalink = params.permalink.join("/");
+		const post = await getPostData(permalink);
+		if (post) {
 			return {
 				props: {
-					post: contents,
-					optionsMap,
+					post,
 				},
-				revalidate: 10000,
 			};
 		}
-
-		return {
-			notFound: true,
-		};
-	} catch (error) {
-		await prismaClient.$disconnect();
-		return {
-			notFound: true,
-		};
 	}
+	return { notFound: true };
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
 	const contents = await getPostsList({ page: 0, pageSize: 20 });
+	const paths = contents
+		.map(({ permalink }) => {
+			const parts = permalink
+				.split("/")
+				.filter((p: string) => p.length > 0);
+			return {
+				params: { permalink: parts },
+			};
+		})
+		.filter((path) => path.params.permalink.length > 0);
 	return {
-		paths: contents.map((post) => ({
-			params: {
-				cid: post.cid.toString(),
-			},
-		})),
-		fallback: true,
+		paths,
+		fallback: false,
 	};
 };
 
@@ -74,13 +59,13 @@ function Post({
 		return "loading...";
 	}
 
-	const postContent = (post.text || "").replace("<!--markdown-->", "");
+	const postContent = post.content;
 
 	return (
 		<>
 			<Head>
 				<title>
-					{optionsMap.title}-{parseFromString(post.title || "")}
+					{optionsMap?.title}-{parseFromString(post.title || "")}
 				</title>
 			</Head>
 			<div className="card w-full md:space-y-4 space-y-2 markdown-body">
@@ -88,7 +73,7 @@ function Post({
 				<div
 					// suppressHydrationWarning={true}
 					dangerouslySetInnerHTML={{
-						__html: marked(postContent),
+						__html: marked(postContent || ""),
 					}}
 				/>
 			</div>

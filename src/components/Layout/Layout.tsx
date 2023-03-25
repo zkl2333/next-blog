@@ -35,7 +35,7 @@ const Layout: React.FC = ({ children }) => {
 						<div className="relative overflow-hidden object-cover w-24 h-24 mx-2 rounded-full">
 							<Image
 								src={
-									"https://gravatar.loli.top/avatar/" +
+									"https://sdn.geekzu.org/avatar/" +
 									MD5("i@zkl2333.com")
 								}
 								alt="avatar"

@@ -2,7 +2,7 @@
 module.exports = {
 	reactStrictMode: true,
 	images: {
-		domains: ["gravatar.loli.top"],
+		domains: ["sdn.geekzu.org"],
 	},
 	devIndicators: {
 		buildActivityPosition: "bottom-right",

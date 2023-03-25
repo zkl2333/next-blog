@@ -1,5 +1,4 @@
 import React from "react";
-import { Option } from "@prisma/client";
 
 export const DarkContext = React.createContext<{
 	userDarkSetting: UserDarkSetting;
@@ -9,4 +8,4 @@ export const DarkContext = React.createContext<{
 	setUserDarkSetting: () => {},
 });
 
-export const OptionsContext = React.createContext<Option[]>([]);
+export const OptionsContext = React.createContext<any[]>([]);
