@@ -9,6 +9,7 @@ specifiers:
   dotenv-cli: ^4.1.0
   eslint: 7.32.0
   eslint-config-next: 13.2.4
+  fibers: link:latest
   github-markdown-css: ^5.0.0
   gray-matter: ^4.0.3
   highlight.js: ^11.3.1
@@ -18,6 +19,7 @@ specifiers:
   react: 18.2.0
   react-dom: 18.2.0
   sass: ^1.43.5
+  sass-loader: ^13.2.1
   swr: ^2.1.1
   tailwindcss: ^2.2.19
   typescript: 4.4.4
@@ -25,14 +27,16 @@ specifiers:
 dependencies:
   '@types/marked': 4.0.1
   dayjs: 1.10.7
+  fibers: link:latest
   github-markdown-css: 5.0.0
   gray-matter: 4.0.3
   highlight.js: 11.3.1
   marked: 4.0.5
-  next: 13.2.4_ly3fxw3tm3omotqcyshzod3rtq
+  next: 13.2.4_3agzp2cbgvndplct4k4nafelby
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   sass: 1.43.5
+  sass-loader: 13.2.1_fibers@latest+sass@1.43.5
   swr: 2.1.1_react@18.2.0
 
 devDependencies:
@@ -1913,7 +1917,7 @@ packages:
     dependencies:
       universalify: 2.0.0
     optionalDependencies:
-      graceful-fs: 4.2.8
+      graceful-fs: 4.2.11
     dev: true
 
   /jsx-ast-utils/3.3.3:
@@ -1927,6 +1931,11 @@ packages:
   /kind-of/6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /klona/2.0.6:
+    resolution: {integrity: sha512-dhG34DXATL5hSxJbIexCft8FChFXtmskoZYnoPWjXQuebWYCNkVeV3KkGegCK9CP1oswI/vQibS2GY7Em/sJJA==}
+    engines: {node: '>= 8'}
     dev: false
 
   /language-subtag-registry/0.3.22:
@@ -2060,7 +2069,11 @@ packages:
     resolution: {integrity: sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=}
     dev: true
 
-  /next/13.2.4_ly3fxw3tm3omotqcyshzod3rtq:
+  /neo-async/2.6.2:
+    resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
+    dev: false
+
+  /next/13.2.4_3agzp2cbgvndplct4k4nafelby:
     resolution: {integrity: sha512-g1I30317cThkEpvzfXujf0O4wtaQHtDCLhlivwlTJ885Ld+eOgcz7r3TGQzeU+cSRoNHtD8tsJgzxVdYojFssw==}
     engines: {node: '>=14.6.0'}
     hasBin: true
@@ -2084,6 +2097,7 @@ packages:
       '@next/env': 13.2.4
       '@swc/helpers': 0.4.14
       caniuse-lite: 1.0.30001470
+      fibers: link:latest
       postcss: 8.4.14
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -2520,6 +2534,31 @@ packages:
       get-intrinsic: 1.2.0
       is-regex: 1.1.4
     dev: true
+
+  /sass-loader/13.2.1_fibers@latest+sass@1.43.5:
+    resolution: {integrity: sha512-VQUrgUa5/waIzMrzyuko3sj5WD9NMsYph91cNICx+OaODbRtLl6To2fswLx8MH2qNxXFqRtpvdPQIa7mE93YOA==}
+    engines: {node: '>= 14.15.0'}
+    peerDependencies:
+      fibers: '>= 3.1.0'
+      node-sass: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
+      sass: ^1.3.0
+      sass-embedded: '*'
+      webpack: ^5.0.0
+    peerDependenciesMeta:
+      fibers:
+        optional: true
+      node-sass:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
+        optional: true
+    dependencies:
+      fibers: link:latest
+      klona: 2.0.6
+      neo-async: 2.6.2
+      sass: 1.43.5
+    dev: false
 
   /sass/1.43.5:
     resolution: {integrity: sha512-WuNm+eAryMgQluL7Mbq9M4EruyGGMyal7Lu58FfnRMVWxgUzIvI7aSn60iNt3kn5yZBMR7G84fAGDcwqOF5JOg==}

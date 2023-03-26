@@ -12,6 +12,7 @@
 	"dependencies": {
 		"@types/marked": "^4.0.1",
 		"dayjs": "^1.10.7",
+		"fibers": "link:latest",
 		"github-markdown-css": "^5.0.0",
 		"gray-matter": "^4.0.3",
 		"highlight.js": "^11.3.1",
@@ -20,6 +21,7 @@
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
 		"sass": "^1.43.5",
+		"sass-loader": "^13.2.1",
 		"swr": "^2.1.1"
 	},
 	"devDependencies": {
