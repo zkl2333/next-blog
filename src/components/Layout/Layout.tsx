@@ -39,7 +39,7 @@ const Layout: React.FC = ({ children }) => {
 									MD5("i@zkl2333.com")
 								}
 								alt="avatar"
-								layout="fill"
+								fill
 							/>
 						</div>
 						<h4 className="mx-2 mt-2 text-xl font-medium text-gray-800 dark:text-gray-200 hover:underline">
@@ -54,14 +54,14 @@ const Layout: React.FC = ({ children }) => {
 						<nav>
 							{menuList.map((menu) =>
 								menu.href ? (
-									<Link key={menu.name} href={menu.href}>
-										<a
-											className="flex items-center justify-center px-4 py-2 mt-1 text-gray-600 transition-colors duration-200 transform dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 hover:text-gray-700 rounded-md overflow-hidden"
-											onClick={menu.onClick}>
-											<span className="mx-4 font-medium">
-												{menu.name}
-											</span>
-										</a>
+									<Link
+										key={menu.name}
+										href={menu.href}
+										className="flex items-center justify-center px-4 py-2 mt-1 text-gray-600 transition-colors duration-200 transform dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 hover:text-gray-700 rounded-md overflow-hidden"
+										onClick={menu.onClick}>
+										<span className="mx-4 font-medium">
+											{menu.name}
+										</span>
 									</Link>
 								) : (
 									<span

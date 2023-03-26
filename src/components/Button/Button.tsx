@@ -20,15 +20,15 @@ export default React.forwardRef<any, IProps>(function Button(props, ref) {
 				<span
 					{...props}
 					className={`${commonClass} ${className} hover:underline`}>
-					<a ref={ref}>{children}</a>
+					{children}
 				</span>
 			);
 		case "link":
 			return (
 				<span
 					{...props}
-					className={`${commonClass} ${className}  text-blue-600 dark:text-blue-400 hover:underline`}>
-					<a ref={ref}>{children}</a>
+					className={`${commonClass} ${className} text-blue-600 dark:text-blue-400 hover:underline`}>
+					{children}
 				</span>
 			);
 		default:

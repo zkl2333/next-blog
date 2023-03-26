@@ -84,8 +84,8 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 					<div key={href} className="min-w-full mx-auto card">
 						<div className="flex items-center justify-between">
 							<span className="text-sm font-light text-gray-600 dark:text-gray-400">
-								{post.modified &&
-									dayjs.unix(post.modified).calendar(null, {
+								{post.date &&
+									dayjs.unix(post.date).calendar(null, {
 										sameDay: "[今天] h:mm A", // The same day ( Today at 2:30 AM )
 										nextDay: "[明天]", // The next day ( Tomorrow at 2:30 AM )
 										nextWeek: "dddd", // The next week ( Sunday at 2:30 AM )
@@ -100,7 +100,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 						</div>
 
 						<div className="mt-2 ">
-							<Link href={href} passHref>
+							<Link href={href}>
 								<Button
 									type="text"
 									className="block truncate text-2xl font-bold text-gray-700 dark:text-white hover:text-gray-600 dark:hover:text-gray-200 hover:underline">
@@ -113,7 +113,7 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = (
 						</div>
 
 						<div className="flex items-center justify-between mt-4">
-							<Link href={href} passHref>
+							<Link href={href}>
 								<Button type="link">Read more</Button>
 							</Link>
 
